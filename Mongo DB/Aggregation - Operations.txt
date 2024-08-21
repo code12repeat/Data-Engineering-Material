@@ -1,0 +1,39 @@
+#####-----Displaying total number of male members in company-------######
+
+> db.employees.aggregate([{$match:{gender:"M"}},{$count:"Total Male employees in company:"}])
+
+#####-----Total employees in both the genders and their maximum age-------######
+
+> db.employees.aggregate([{$group: {_id:"$gender", total_emp: {$sum:1}, max_Age:{$max:"$Age"} } }])
+
+#####-----Employees whose age is less than 35-------######
+
+> db.employees.aggregate([{$match:{Age:{$lt:35}}}]).pretty()
+
+
+#####-----Sorting employees according to the age-------######
+
+> db.employees.aggregate([{'$sort': {'Age': 1}}]).pretty()
+
+#####-----Top 3 senior female employees of company-------######
+
+> db.employees.aggregate([{$match:{gender:"F"}},{'$sort': {'Age': -1}},{$limit:3}]).pretty()
+
+#####-----Unwinding the employees in company as per the countries they've visited-------######
+
+> db.employees.aggregate([{$unwind:"$countriesVisited"}]).pretty()
+
+
+
+#####--------MapReduce in MongoDB----------######
+
+####Using employees data file
+---> Map= Grouping the docs according to age
+---> Reduce= Performing the operation i.e., sum on grouped data.
+
+--------Finding the age group with highest performance ratings----------------
+
+> var mapfunction = function(){emit(this.Age, this.performance_rating)}
+> var reducefunction = function(key, values){return Array.sum(values)}
+> db.employees.mapReduce(mapfunction, reducefunction, {'out':'output'})
+

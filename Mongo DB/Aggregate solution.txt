@@ -1,0 +1,114 @@
+# Take-home 1 (solution)
+# Using Persons Dataset - Aggregation operations
+
+# Prerequisite
+# Create a database. And then,
+# Create collection persons, import the json dataset
+
+
+#############Queries
+
+# Q.1 Find the documents where persons age is less than 25.
+
+> db.persons.
+aggregate([
+{$match: {age : {$lt: 25}}}
+])
+
+
+# Q.2 Find all documents that have country field equals to USA
+
+> db.Persons.
+aggregate([
+{$match: {"company.location.country" : "USA"}}
+])
+
+
+# Q.3 Find all distinct values of age in persons collection, by grouping all the documents.
+
+> db.Persons.
+aggregate([
+{$group: {_id: {"age":"$age"}} }
+])
+
+
+# Q.4 Find all documents from persons collection, then group them by eye color and age. And, filter those pairs by eye color blue.
+ 
+> db.persons.
+aggregate([
+{$group: {_id: {eyeColor: "$eyeColor", age: "$age"}}},
+{$match: {"_id.eyeColor": "blue"}}
+])
+
+
+
+# Q.5 Group all documents in the persons collection by favourite fruit and claculate average age for each group.
+
+> db.persons.
+aggregate([
+{$group: {
+_id: "$favouriteFruit",
+avgAge: {$avg: "$age"}
+}}
+])
+
+
+
+# Q.6 Find average age of the persons for each country.
+
+> db.persons.
+aggregate([
+{$group: {
+_id: "$company.location.country",
+avgAge: {$avg: "$age"}
+}}
+])
+
+
+
+## Q.7 Display name, age, gender from all the documents with maximum 4 fields.(Note: Using $project operation)
+#      And count such documents as total.
+
+> db.persons.
+aggregate([
+{$project: {_id: 0,name:1, age: 1, gender: 1}},
+{$count: "total"}
+])
+
+
+
+
+
+# Q.8 Find all the countries, people have there companies in.
+//  $group by nested fields
+
+> db.persons.
+aggregate([
+{$group: {_id: "$company.location.country"}}
+])
+
+
+
+# Q.9 Sorting persons according to the age. 
+
+> db.persons.aggregate(
+[{'$sort': {'age': 1}}]).pretty()
+
+
+
+# Q.10 Display total number of persons, whose favourite fruit is banana.
+
+> db.persons.aggregate( [
+{$match:{favouriteFruit:"banana"}},
+{$count:"Total People likes banana:"}
+])
+
+
+# Q.1 Group all documents in the persons collection by eye color and claculate average age for each group.
+
+> db.persons.
+aggregate([
+{$group: {_id: "$favouriteFruit",
+avgAge: {$avg: "$age"}
+}}
+])
